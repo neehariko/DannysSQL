@@ -1,0 +1,52 @@
+
+
+1.What is the total amount each customer spent at the restaurant?
+Select customer_id , sum(price)
+ from dannys_diner.sales join dannys_diner.menu
+ on sales.product_id =menu.product_id
+ group by(customer_id)
+ Order by(customer_id);
+ 
+ 
+
+
+2.How many days has each customer visited the restaurant?
+ SELECT customer_id , COUNT(DISTINCT(order_date))
+ from dannys_diner.sales
+ group by(customer_id) ;
+
+
+   
+3.What was the first item from the menu purchased by each customer?
+
+      SELECT s.customer_id,
+       m.product_name
+      FROM dannys_diner.sales AS s
+      JOIN dannys_diner.menu AS m ON s.product_id = m.product_id
+JOIN (
+    SELECT customer_id,
+           MIN(order_date) AS first_order_date
+    FROM dannys_diner.sales
+    GROUP BY customer_id
+) AS first_orders ON s.customer_id = first_orders.customer_id
+                  AND s.order_date = first_orders.first_order_date;
+
+  
+   
+4 .What is the most purchased item on the menu and how many times was it purchased by all customers?
+A .    SELECT product_name AS most_purchased_item,
+       count(sales.product_id) AS order_count
+       FROM dannys_diner.menu
+       INNER JOIN dannys_diner.sales ON menu.product_id = sales.product_id
+       GROUP BY product_name
+       ORDER BY order_count DESC
+       LIMIT 1;
+
+
+5.Which item was the most popular for each customer?
+
+Which item was purchased first by the customer after they became a member?
+Which item was purchased just before the customer became a member?
+What is the total items and amount spent for each member before they became a member?
+If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
