@@ -67,13 +67,45 @@ A .   SELECT COUNT(s.product_id) as count ,m.product_name
 
 5.Which item was the most popular for each customer?
 
+WITH most_popular AS (
+  SELECT 
+    sales.customer_id, 
+    menu.product_name, 
+    COUNT(menu.product_id) AS order_count,
+    DENSE_RANK() OVER(
+      PARTITION BY sales.customer_id 
+      ORDER BY COUNT(sales.customer_id) DESC) AS rank
+  FROM dannys_diner.menu
+  JOIN dannys_diner.sales
+    ON menu.product_id = sales.product_id
+  GROUP BY sales.customer_id, menu.product_name
+)
+
+SELECT 
+  customer_id, 
+  product_name, 
+  order_count
+FROM most_popular 
+WHERE rank = 1;
 
 
 
-
- 6. Which item was purchased first by the customer after they became a member?
- 7.Which item was purchased just before the customer became a member?
+ 6. Which item was purchased first by the customer after they became a member? - should learn cte and window functions
+ 7.Which item was purchased just before the customer became a member? should learn cte and window functions
 8.What is the total items and amount spent for each member before they became a member?
+
+SELECT 
+  sales.customer_id, 
+  COUNT(sales.product_id) AS total_items, 
+  SUM(menu.price) AS total_sales
+FROM dannys_diner.sales
+JOIN dannys_diner.members
+  ON sales.customer_id = members.customer_id
+  AND sales.order_date < members.join_date
+JOIN dannys_diner.menu
+  ON sales.product_id = menu.product_id
+GROUP BY sales.customer_id
+ORDER BY sales.customer_id;
 9.If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 
 
